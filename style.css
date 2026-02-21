@@ -1,0 +1,358 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+    --retro-bg: #2c3329;
+    --retro-bezel: #879782; 
+    --retro-screen: #8bac0f;
+    --retro-dark: #0f380f;
+    --retro-shadow: #1f2a17;
+}
+
+body {
+    background-color: var(--retro-bg); font-family: 'Press Start 2P', cursive;
+    display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; 
+    overflow: hidden; color: var(--retro-dark); touch-action: none; 
+}
+
+.device-bezel {
+    background-color: var(--retro-bezel); 
+    width: 100%; max-width: 450px; height: 100%; max-height: 850px;
+    box-sizing: border-box; padding: 25px 20px 20px 20px; 
+    border-radius: 10px 10px 40px 10px;
+    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2), 0 10px 30px rgba(0,0,0,0.6);
+    position: relative; 
+    
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        "screen screen"
+        "dpad buttons"
+        "sys sys";
+    align-items: center;
+    gap: 15px;
+    transition: all 0.5s ease;
+}
+
+.gb-speaker, .gb-power-led, .gba-logo { display: none; }
+
+.screen-container {
+    grid-area: screen; width: 100%; align-self: start;
+    position: relative; background-color: var(--retro-screen); border: 15px solid #5a5a5a;
+    border-radius: 10px 10px 35px 10px; padding: 5px; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    box-sizing: border-box; transition: all 0.5s ease;
+    display: flex; flex-direction: column; align-items: center;
+}
+.scanlines {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%); background-size: 100% 4px; z-index: 5;
+}
+canvas { display: block; width: 100%; aspect-ratio: 1 / 1; border-radius: 2px; background: var(--retro-screen); }
+
+.retro-scoreboard { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.6rem; width: 100%; }
+.score-left, .score-center, .score-right { flex: 1; }
+.score-left { display: flex; align-items: center; gap: 8px; justify-content: flex-start; }
+.score-center { text-align: center; }
+.score-right { text-align: right; }
+.sound-icon { cursor: pointer; width: 14px; height: 14px; display: flex; align-items: center; }
+#score { display: inline-block; transition: transform 0.1s ease; }
+.score-pulse { transform: scale(1.6); }
+
+.overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(139, 172, 15, 0.95);
+    display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; text-align: center;
+}
+h1 { margin-bottom: 5px; font-size: 1.5rem; animation: floatText 2s ease-in-out infinite; }
+@keyframes floatText { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.stop-animation { animation: none !important; }
+
+.mode-selector { display: flex; align-items: center; gap: 15px; margin: 10px 0; font-size: 0.7rem; background: rgba(15, 56, 15, 0.1); padding: 10px; border-radius: 5px; }
+.mode-arrow { cursor: pointer; animation: blink 1s infinite; }
+.mode-arrow:active { transform: scale(0.8); }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.menu-buttons { display: flex; flex-direction: column; gap: 10px; width: 180px; }
+.menu-btn { background: var(--retro-dark); color: var(--retro-screen); border: 3px solid var(--retro-dark); padding: 10px; font-family: 'Press Start 2P', cursive; font-size: 0.7rem; cursor: pointer; box-shadow: 2px 2px 0px var(--retro-shadow); width: 100%; }
+.menu-btn.selected { background: var(--retro-screen); color: var(--retro-dark); }
+.menu-btn:active { transform: translate(2px, 2px); box-shadow: none; }
+
+.github-link { 
+    position: absolute; bottom: 15px; color: var(--retro-dark); text-decoration: none; 
+    display: inline-flex; align-items: center; gap: 6px; font-weight: bold; letter-spacing: 1px; font-size: 0.45rem; z-index: 20;
+}
+
+.gb-dpad-wrapper { grid-area: dpad; justify-self: start; padding-left: 10px; transition: all 0.5s ease; }
+.gb-dpad { display: grid; grid-template-columns: 35px 35px 35px; grid-template-rows: 35px 35px 35px; gap: 0; box-shadow: 2px 5px 10px rgba(0,0,0,0.2); border-radius: 50%; }
+.gb-dpad-btn { background: #222; border: none; outline: none; margin: 0; padding: 0; user-select: none; }
+.gb-dpad-btn:active { background: #000; }
+.gb-dpad-btn.up { grid-column: 2; grid-row: 1; border-radius: 5px 5px 0 0; }
+.gb-dpad-btn.left { grid-column: 1; grid-row: 2; border-radius: 5px 0 0 5px; }
+.gb-dpad-btn.right { grid-column: 3; grid-row: 2; border-radius: 0 5px 5px 0; }
+.gb-dpad-btn.down { grid-column: 2; grid-row: 3; border-radius: 0 0 5px 5px; }
+.gb-dpad-center { grid-column: 2; grid-row: 2; background: #222; display: flex; justify-content: center; align-items: center; }
+.gb-dpad-center-circle { width: 12px; height: 12px; border-radius: 50%; background: #1a1a1a; }
+
+.gb-action-wrapper { grid-area: buttons; justify-self: end; padding-right: 10px; transition: all 0.5s ease; }
+.gb-action-buttons { display: flex; gap: 15px; transform: rotate(-20deg); }
+.gb-btn-group { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.btn-b-group { transform: translateY(20px); }
+.gb-round-btn { width: 45px; height: 45px; border-radius: 50%; background: #a6105c; border: none; box-shadow: inset -2px -2px 5px rgba(0,0,0,0.4), 2px 5px 8px rgba(0,0,0,0.3); cursor: pointer; outline: none; user-select: none; }
+.gb-round-btn:active { transform: scale(0.95); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.6); }
+.gb-btn-label { font-family: sans-serif; font-size: 0.6rem; color: #333; font-weight: bold; letter-spacing: 1px; }
+
+.gb-sys-wrapper { grid-area: sys; display: flex; justify-content: center; gap: 30px; padding-bottom: 10px; transition: all 0.5s ease; }
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+    --retro-bg: #2c3329;
+    --retro-bezel: #879782;
+    --retro-screen: #8bac0f;
+    --retro-dark: #0f380f;
+    --retro-shadow: #1f2a17;
+}
+
+body {
+    background-color: var(--retro-bg);
+    font-family: 'Press Start 2P', cursive;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    color: var(--retro-dark);
+    touch-action: none;
+}
+
+.device-bezel {
+    background-color: var(--retro-bezel);
+    width: 100%;
+    max-width: 450px;
+    height: 100%;
+    max-height: 850px;
+    box-sizing: border-box;
+    padding: 25px 20px 20px 20px;
+    border-radius: 10px 10px 40px 10px;
+    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2), 0 10px 30px rgba(0,0,0,0.6);
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas: "screen screen" "dpad buttons" "sys sys";
+    align-items: center;
+    gap: 15px;
+    transition: all 0.5s ease;
+}
+
+.gb-speaker,
+.gb-power-led,
+.gba-logo {
+    display: none;
+}
+
+.screen-container {
+    grid-area: screen;
+    width: 100%;
+    align-self: start;
+    position: relative;
+    background-color: var(--retro-screen);
+    border: 15px solid #5a5a5a;
+    border-radius: 10px 10px 35px 10px;
+    padding: 5px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    box-sizing: border-box;
+    transition: all 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%);
+    background-size: 100% 4px;
+    z-index: 5;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 2px;
+    background: var(--retro-screen);
+}
+
+.retro-scoreboard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 0.6rem;
+    width: 100%;
+}
+
+.score-left,
+.score-center,
+.score-right {
+    flex: 1;
+}
+
+.score-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-start;
+}
+
+.score-center { text-align: center; }
+.score-right { text-align: right; }
+.sound-icon { cursor: pointer; width: 14px; height: 14px; display: flex; align-items: center; }
+#score { display: inline-block; transition: transform 0.1s ease; }
+.score-pulse { transform: scale(1.6); }
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(139,172,15,0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    text-align: center;
+}
+
+h1 { margin-bottom: 5px; font-size: 1.5rem; animation: floatText 2s ease-in-out infinite; }
+@keyframes floatText { 0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)} }
+.stop-animation { animation: none !important; }
+
+.mode-selector { display: flex; align-items: center; gap: 15px; margin: 10px 0; font-size: 0.7rem; background: rgba(15,56,15,0.1); padding: 10px; border-radius: 5px; }
+.mode-arrow { cursor: pointer; animation: blink 1s infinite; }
+.mode-arrow:active { transform: scale(0.8); }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+.menu-buttons { display: flex; flex-direction: column; gap: 10px; width: 180px; }
+.menu-btn { background: var(--retro-dark); color: var(--retro-screen); border: 3px solid var(--retro-dark); padding: 10px; font-family: 'Press Start 2P', cursive; font-size: 0.7rem; cursor: pointer; box-shadow: 2px 2px 0px var(--retro-shadow); width: 100%; }
+.menu-btn.selected { background: var(--retro-screen); color: var(--retro-dark); }
+.menu-btn:active { transform: translate(2px,2px); box-shadow: none; }
+
+.github-link { position: absolute; bottom: 15px; color: var(--retro-dark); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-weight: bold; letter-spacing: 1px; font-size: 0.45rem; z-index: 20; }
+
+.gb-dpad-wrapper { grid-area: dpad; justify-self: start; padding-left: 10px; transition: all 0.5s ease; }
+.gb-dpad { display: grid; grid-template-columns: 35px 35px 35px; grid-template-rows: 35px 35px 35px; gap: 0; box-shadow: 2px 5px 10px rgba(0,0,0,0.2); border-radius: 50%; }
+.gb-dpad-btn { background: #222; border: none; outline: none; margin: 0; padding: 0; user-select: none; }
+.gb-dpad-btn:active { background: #000; }
+.gb-dpad-btn.up { grid-column: 2; grid-row: 1; border-radius: 5px 5px 0 0; }
+.gb-dpad-btn.left { grid-column: 1; grid-row: 2; border-radius: 5px 0 0 5px; }
+.gb-dpad-btn.right { grid-column: 3; grid-row: 2; border-radius: 0 5px 5px 0; }
+.gb-dpad-btn.down { grid-column: 2; grid-row: 3; border-radius: 0 0 5px 5px; }
+.gb-dpad-center { grid-column: 2; grid-row: 2; background: #222; display: flex; justify-content: center; align-items: center; }
+.gb-dpad-center-circle { width: 12px; height: 12px; border-radius: 50%; background: #1a1a1a; }
+
+.gb-action-wrapper { grid-area: buttons; justify-self: end; padding-right: 10px; transition: all 0.5s ease; }
+.gb-action-buttons { display: flex; gap: 15px; transform: rotate(-20deg); }
+.gb-btn-group { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.btn-b-group { transform: translateY(20px); }
+.gb-round-btn { width: 45px; height: 45px; border-radius: 50%; background: #a6105c; border: none; box-shadow: inset -2px -2px 5px rgba(0,0,0,0.4), 2px 5px 8px rgba(0,0,0,0.3); cursor: pointer; outline: none; user-select: none; }
+.gb-round-btn:active { transform: scale(0.95); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.6); }
+.gb-btn-label { font-family: sans-serif; font-size: 0.6rem; color: #333; font-weight: bold; letter-spacing: 1px; }
+
+.gb-sys-wrapper { grid-area: sys; display: flex; justify-content: center; gap: 30px; padding-bottom: 10px; transition: all 0.5s ease; }
+.gb-sys-group { display: flex; flex-direction: column; align-items: center; gap: 8px; transform: rotate(-25deg); }
+.gb-pill-btn { width: 45px; height: 12px; border-radius: 20px; background: #666; border: none; box-shadow: inset -1px -2px 3px rgba(0,0,0,0.6), 1px 3px 5px rgba(0,0,0,0.2); cursor: pointer; outline: none; user-select: none; }
+.gb-pill-btn:active { background: #444; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8); }
+.gb-sys-label { font-size: 0.45rem; color: #444; font-family: sans-serif; font-weight: bold; letter-spacing: 1px; }
+
+@media (orientation: landscape) and (max-height: 600px) and (hover: none) {
+    .device-bezel {
+        max-width: 100vw;
+        height: 100vh;
+        padding: 10px 25px;
+        border-radius: 30px 30px 80px 80px / 50% 50% 40% 40%;
+        grid-template-columns: min-content 1fr min-content;
+        grid-template-rows: 1fr;
+        grid-template-areas: "dpad screen buttons";
+        gap: 15px;
+        box-shadow: inset -2px -5px 15px rgba(0,0,0,0.3), inset 2px 5px 15px rgba(255,255,255,0.1), 0 15px 40px rgba(0,0,0,0.5);
+    }
+    .screen-container {
+        grid-area: screen;
+        height: 100%;
+        width: 100%;
+        border: 20px solid #111;
+        border-radius: 12px;
+        background-color: #000;
+        margin: 0;
+        padding: 5px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+    .scanlines { display: none; }
+    canvas { height: 100% !important; width: auto !important; aspect-ratio: 1/1 !important; background-color: var(--retro-screen); border-radius: 2px; }
+    .retro-scoreboard { position: absolute; bottom: 10px; width: auto; font-size: 0.5rem; color: #eee; background: rgba(0,0,0,0.5); padding: 2px 10px; border-radius: 10px; }
+    .gb-power-led { display: block; position: absolute; top: 15%; right: 8%; width: 8px; height: 8px; background-color: #4eff00; border-radius: 50%; box-shadow: 0 0 5px #4eff00; }
+    .gb-power-led::after { content: 'POWER'; position: absolute; left: -32px; top: -1px; font-size: 0.4rem; font-family: sans-serif; color: var(--retro-shadow); font-weight: bold; opacity: 0.6; }
+    .gb-speaker { display: block; position: absolute; bottom: 12%; right: 7%; width: 45px; height: 45px; opacity: 0.7; }
+    .gb-speaker::before { content: ''; position: absolute; top: 0; left: -35px; width: 220%; height: 5px; background-color: var(--retro-shadow); border-radius: 5px; box-shadow: 0 12px 0 var(--retro-shadow), 0 23px 0 var(--retro-shadow), 0 34px 0 var(--retro-shadow); }
+    .gb-dpad-wrapper, .gb-action-wrapper { justify-self: center; align-self: center; margin: 0; }
+    .gb-sys-wrapper { position: absolute; bottom: 12%; left: 4.5%; display: flex; flex-direction: row; gap: 15px; transform: rotate(-15deg); }
+}
+
+@media (min-width: 1025px) or (hover: hover) {
+    .device-bezel { height: auto; border-radius: 20px 20px 40px 40px; padding-bottom: 30px; display: flex; flex-direction: column; width: 450px; }
+    .gb-dpad-wrapper, .gb-action-wrapper, .gb-sys-wrapper, .gb-power-led, .gb-speaker { display: none !important; }
+    .retro-scoreboard { font-size: 0.8rem; }
+    .screen-container { width: 100%; aspect-ratio: auto; background-color: var(--retro-screen); border-width: 15px; box-sizing: border-box; }
+}
+
+.device-bezel.monitor {
+    width: 420px;
+    max-width: 420px;
+    max-height: 560px;
+    margin: 0 auto;
+    padding: 25px 20px 20px 20px;
+    box-sizing: border-box;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: auto 1fr auto !important;
+    grid-template-areas: "screen screen" "dpad buttons" "sys sys" !important;
+    gap: 15px !important;
+    justify-items: center;
+    border-radius: 18px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset -5px -5px 15px rgba(0,0,0,0.15);
+}
+
+.device-bezel.monitor .gb-dpad-wrapper,
+.device-bezel.monitor .gb-action-wrapper,
+.device-bezel.monitor .gb-sys-wrapper,
+.device-bezel.monitor .gb-power-led,
+.device-bezel.monitor .gb-speaker { display: none !important; }
+
+.device-bezel.monitor .screen-container {
+    width: 100% !important;
+    max-width: 420px;
+    border: 16px solid #565656;
+    box-sizing: border-box;
+    background-color: var(--retro-screen);
+    z-index: 3;
+    border-radius: 4px;
+    box-shadow: inset 0 6px 0 rgba(0,0,0,0.12), inset 0 -6px 0 rgba(0,0,0,0.06);
+}
+
+.device-bezel.monitor canvas { width: 100% !important; height: auto !important; aspect-ratio: 1/1 !important; }
+
+.device-bezel.monitor::before { content: ''; position: absolute; top: 50px; left: 50px; right: 50px; bottom: 50px; border-radius: 0; box-shadow: inset 0 0 0 6px rgba(0,0,0,0.5); pointer-events: none; z-index: 2; }
+
+.device-bezel.monitor .retro-scoreboard { position: relative; bottom: 0; background: transparent; color: var(--retro-dark); }
