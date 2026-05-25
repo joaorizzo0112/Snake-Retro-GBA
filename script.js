@@ -30,6 +30,7 @@ let currentScreen = 'START';
 let selectedMenuItem = 0; 
 let bonusFood = null;
 let bonusTimer = null;
+let ateFood = false;
 
 const levelNames = [
     "WORM", "SNAKE", "VIPER", "COBRA", "PYTHON", 
@@ -283,11 +284,15 @@ function initGame() {
 
 function generateFood() {
     food = { x: Math.floor(Math.random() * (canvas.width / box)) * box, y: Math.floor(Math.random() * (canvas.height / box)) * box };
-    if (snake.some(p => p.x === food.x && p.y === food.y)) generateFood();
+    if (snake.some(p => p.x === food.x && p.y === food.y)) return generateFood();
+    if (bonusFood && food.x === bonusFood.x && food.y === bonusFood.y) return generateFood();
 }
 
 function generateBonus() {
+    clearTimeout(bonusTimer);
     bonusFood = { x: Math.floor(Math.random() * (canvas.width / box)) * box, y: Math.floor(Math.random() * (canvas.height / box)) * box };
+    if (bonusFood.x === food.x && bonusFood.y === food.y) return generateBonus();
+    if (snake.some(p => p.x === bonusFood.x && p.y === bonusFood.y)) return generateBonus();
     bonusTimer = setTimeout(() => { bonusFood = null; }, 5000);
 }
 
@@ -434,6 +439,7 @@ function safeScorePulse() {
 
 function update() {
     changingDirection = false;
+    ateFood = false;
     if (!direction) return;
 
     let snakeX = snake[0].x; let snakeY = snake[0].y;
@@ -456,6 +462,7 @@ function update() {
     if (bonusFood && snakeX === bonusFood.x && snakeY === bonusFood.y) {
         score += 50; playSound('bonus'); safeScorePulse(); scoreDisplay.innerText = score;
         bonusFood = null; clearTimeout(bonusTimer);
+        ateFood = true;
     }
 
     if (snakeX === food.x && snakeY === food.y) {
@@ -469,7 +476,10 @@ function update() {
         }
         
         if (mode === "BÓNUS" && score > 0 && (score % 50) === 0) generateBonus();
-    } else {
+        ateFood = true;
+    }
+
+    if (!ateFood) {
         snake.pop();
     }
 
@@ -490,7 +500,10 @@ function gameOver() {
     statusText.classList.add('stop-animation'); 
     let mode = MODES[selectedModeIndex];
     let max = localStorage.getItem("snakeMax_" + mode) || 0;
-    if (score > max) localStorage.setItem("snakeMax_" + mode, score);
+    if (score > max) {
+        localStorage.setItem("snakeMax_" + mode, score);
+        highScoreDisplay.innerText = score;
+    }
     
     instructionText.style.display = "block";
     instructionText.innerText = "Pressione START para voltar";
@@ -519,3 +532,10 @@ function start() {
 }
 
 showStartScreen();
+// Aplica classe 'monitor' só no desktop (rato + ecrã largo)
+const desktopQuery = window.matchMedia('(min-width: 1025px) and (hover: hover)');
+function applyLayout() {
+    document.getElementById('gameConsole').classList.toggle('monitor', desktopQuery.matches);
+}
+applyLayout();
+desktopQuery.addEventListener('change', applyLayout);
